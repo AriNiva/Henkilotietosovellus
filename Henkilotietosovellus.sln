@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Henkilotietosovellus", "Henkilotietosovellus\Henkilotietosovellus.csproj", "{7454C7C0-ADCF-4972-8B56-6C0C6047758F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Henkilotietosovellus.Tests", "Henkilotietosovellus.Tests\Henkilotietosovellus.Tests.csproj", "{2462299C-AB29-4938-BF6D-338EBE59A6CD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7454C7C0-ADCF-4972-8B56-6C0C6047758F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7454C7C0-ADCF-4972-8B56-6C0C6047758F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7454C7C0-ADCF-4972-8B56-6C0C6047758F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7454C7C0-ADCF-4972-8B56-6C0C6047758F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2462299C-AB29-4938-BF6D-338EBE59A6CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2462299C-AB29-4938-BF6D-338EBE59A6CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2462299C-AB29-4938-BF6D-338EBE59A6CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2462299C-AB29-4938-BF6D-338EBE59A6CD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2494DCE5-D2ED-4AF3-93C8-D3F790BBDC4A}
+	EndGlobalSection
+EndGlobal
