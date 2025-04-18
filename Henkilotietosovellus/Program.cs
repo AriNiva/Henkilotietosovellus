@@ -20,7 +20,7 @@ namespace Henkilotietosovellus
 
             while (string.IsNullOrWhiteSpace(sukupuoli))
             {
-                Console.Write("Kerro sukupuolesi. (Mies/Nainen). ");
+                Console.WriteLine("Kerro sukupuolesi. (Mies/Nainen) ");
                 sukupuoli = Console.ReadLine() ?? string.Empty;
             }
             return sukupuoli;
@@ -48,7 +48,7 @@ namespace Henkilotietosovellus
 
             while (string.IsNullOrWhiteSpace(nimi)) 
             {
-                Console.Write("Anna nimesi ");
+                Console.WriteLine("Anna nimesi ");
                 nimi = Console.ReadLine() ?? string.Empty;
             }
 
