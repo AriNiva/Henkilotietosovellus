@@ -23,7 +23,7 @@ namespace Henkilotietosovellus.Tests
         public void Main_AsksForUsersSex_WhenExecuted() 
         {
             SetupUserResponses("Mies", "Ari");
-            var expectedPrompt = "Kerro sukupuolesi. (Mies/Nainen) ";
+            var expectedPrompt = "Kerro sukupuolesi. (Mies/Nainen).";
 
             var outputLines = RunMainAndGetConsoleOutput();
 
