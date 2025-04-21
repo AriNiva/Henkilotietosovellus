@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 [assembly: InternalsVisibleTo("Henkilotietosovellus.Tests")]
 namespace Henkilotietosovellus
@@ -18,6 +19,12 @@ namespace Henkilotietosovellus
             var ikä = KysyKäyttäjänIkä();
             Tervehdys(nimi, ikä, sukupuoli);
             MuodostaIkäLuokitus(ikä);
+            Console.WriteLine("Yhteystiedot ovat...");
+            TulostaOsoite(osoite);
+            TulostaPostinumero(postinumero);
+            TulostaPostitoimipaikka(postitoimipaikka);
+            TulostaPuhelinnumero(puhelinnumero);
+            TulostaSähköposti(sähköposti);
             Kysymys(sukupuoli);
         }
 
@@ -29,53 +36,127 @@ namespace Henkilotietosovellus
 
         private static string KysyKäyttäjänSukupuoli() 
         {
-            string sukupuoli = string.Empty;
+            string sukupuoli;
 
-            while (string.IsNullOrWhiteSpace(sukupuoli))
+            do
             {
                 Console.WriteLine("Kerro sukupuolesi. (Mies/Nainen).");
-                sukupuoli = Console.ReadLine() ?? string.Empty;
+                sukupuoli = Console.ReadLine()?.Trim() ?? string.Empty;
+
+                if (sukupuoli != "Mies" &&  sukupuoli != "Nainen") 
+                {
+                    Console.WriteLine("Virhe: Syötä Mies tai Nainen");
+                }
             }
+            while (sukupuoli != "Mies" && sukupuoli != "Nainen");
+            
             return sukupuoli;
+                
+            
+
+            /* ReadLine()?.Trim().ToLower()
+               * ReadLine() lukee rivin.
+               * ?.Trim() poistaa tyhjät merkit alusta ja lopusta, mutta ei kaadu jos null.
+               * ToLower() muuntaa kaiken pieniksi kirjaimiksi. */
+
+            /* return char.ToUpper(sukupuoli[0]) + sukupuoli.Substring(1);
+               *palauttaa muotoillun version: "mies" -> "Mies" ja "nainen" -> "Nainen" */
+
         }
 
         private static string KysyKäyttäjänNimi()
         {
-            string nimi = string.Empty;
+            string nimi;
 
-            while (string.IsNullOrWhiteSpace(nimi))
+            do
             {
                 Console.WriteLine("Anna nimesi.");
                 nimi = Console.ReadLine() ?? string.Empty;
+
+                if (!OnKelvollinenNimi(nimi)) 
+                {
+                    Console.WriteLine("Virhe: Nimi saa sisältää vain kirjaimia ja välilyöntejä");
+                }
             }
+            while (!OnKelvollinenNimi(nimi));
 
             return nimi;
         }
 
+        private static bool OnKelvollinenNimi(string nimi) 
+        { 
+            /* Tarkistaa, että nimi ei ole tyhjä ja sisältää vain kirjaimia tai välejä
+               Nimi ei voi olla numero tai sekavaa syötettä esim. "!@#"
+               char.IsLetter(c) varmistaa, että merkki on kirjain
+               c == ' ' sallii välilyönnin (esim. Matti Meikäläinen)
+
+            Jos kaikki merkit ovat hyväksyttäviä ja syöte ei ole tyhjä, palautetaan true
+            */
+            return !string.IsNullOrWhiteSpace(nimi) && nimi.All(c => char.IsLetter(c) || c == ' ');
+
+        }
+
         private static string KysyKäyttäjänPuhelinnumero()
         { 
-            string puhelinnumero = string.Empty;
+            string puhelinnumero;
 
-            while (string.IsNullOrWhiteSpace(puhelinnumero)) 
+            do
             {
                 Console.WriteLine("Anna puhelinnumerosi.");
                 puhelinnumero = Console.ReadLine() ?? string.Empty;
+
+                if (!OnKelvollinenPuhelinnumero(puhelinnumero)) 
+                {
+                    Console.WriteLine("Virhe: Anna kelvollinen puhelinnumero");
+                }
             }
+            while (!OnKelvollinenPuhelinnumero(puhelinnumero));
 
             return puhelinnumero;
         }
 
+        private static bool OnKelvollinenPuhelinnumero(string puhelinnumero) 
+        {
+            // Puhelinnumeron validointi Regexillä. Sallii kansainväliset ja suomalaiset muodot.
+            var puhelinRegex = new Regex(@"^\+?[0-9\s\-]{6,20}$");
+            return puhelinRegex.IsMatch(puhelinnumero);
+
+            /* Selitys Regexistä:
+               ^ ja $ määrittelevät alku- ja loppupisteet
+               \+? sallii yhden + -merkin alussa(vapaaehtoinen)
+               [0-9\s\-]{6,20} sallii numerot, välilyönnit ja viivat, 6-20 merkkiä pitkänä*/
+        }
+
         private static string KysyKäyttäjänSähköposti() 
         { 
-            string sähköposti = string.Empty;
+            string sähköposti;
 
-            while (string.IsNullOrWhiteSpace(sähköposti)) 
+            do
             {
                 Console.WriteLine("Anna sähköpostiosoitteesi.");
                 sähköposti = Console.ReadLine() ?? string.Empty;
+
+                if (!OnKelvollinenSähköposti(sähköposti)) 
+                {
+                    Console.WriteLine("Virhe: Sähköpostiosoitteen tulee olla muodossa nimi@domain.com");
+                }
             }
+            while (!OnKelvollinenSähköposti(sähköposti));
 
             return sähköposti;
+        }
+
+        private static bool OnKelvollinenSähköposti(string sähköposti) 
+        {
+            var sähköpostiRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+            return sähköpostiRegex.IsMatch(sähköposti);
+
+            /* Selitys Regexistä:
+               ^[^@\s]+ -> alkaa yhdellä tai useammalla merkillä, joka ei ole @ tai välilyönti
+               @ -> pakollinen @-merkki
+               [^@\s] -> taas merkkejä, ei @ tai välilyönti
+               \. -> piste
+               [^@\s]+$ -> lopussa vielä merkkejä, ei @ tai välilyönti*/
         }
 
         private static string KysyKäyttäjänOsoite() 
@@ -93,28 +174,63 @@ namespace Henkilotietosovellus
 
         private static string KysyKäyttäjänPostinumero() 
         { 
-            string postinumero = string.Empty;
+            string postinumero;
 
-            while (string.IsNullOrWhiteSpace(postinumero)) 
+            do
             {
                 Console.WriteLine("Anna postinumerosi.");
                 postinumero = Console.ReadLine() ?? string.Empty;
+
+                if (!OnKelvollinenPostinumero(postinumero))
+                {
+                    Console.WriteLine("Virhe: Postinumeron tulee olla 5-numeroinen luku (esim. 00100).");
+                }
             }
+            while (!OnKelvollinenPostinumero(postinumero));
 
             return postinumero;
         }
 
+        private static bool OnKelvollinenPostinumero(string postinumero) 
+        {
+            // Tarkistaa että postinumero on viisi numeroa
+            var postinumeroRegex = new Regex(@"^\d{5}$");
+            return postinumeroRegex.IsMatch(postinumero);
+            
+        }
+
         private static string KysyKäyttäjänPostitoimipaikka()
         {
-            string postitoimipaikka = string.Empty;
+            string postitoimipaikka;
 
-            while (string.IsNullOrWhiteSpace (postitoimipaikka)) 
+            do
             {
                 Console.WriteLine("Anna postitoimipaikkasi.");
                 postitoimipaikka = Console.ReadLine() ?? string.Empty;
+
+                if (!OnKelvollinenPostitoimipaikka(postitoimipaikka))
+                {
+                    Console.WriteLine("Virhe: Postitoimipaikan tulee sisältää vain kirjaimia, välilyötejä tai väliviivoja (esim. Nummi-Pusula).");
+                }
             }
+            while (!OnKelvollinenPostitoimipaikka(postitoimipaikka));
 
             return postitoimipaikka;
+        }
+
+        private static bool OnKelvollinenPostitoimipaikka(string postitoimipaikka) 
+        {
+            var postitoimipaikkaRegex = new Regex(@"^[A-Za-zÅÄÖåäö\s\-]+$");
+            return postitoimipaikkaRegex.IsMatch (postitoimipaikka);
+
+            /* Regex selitys:
+               ^ ja $ = alku ja loppu
+
+               [A-Za-zÅÄÖåäö\s\-]+ = sallitaan:
+               isot ja pienet kirjaimet (myös suomen kielen ääkköset)
+               \s = whitespace (välilyönti)
+               \- = väliviiva
+               + = yksi tai useampi sallittu merkki*/
         }
 
         private static int KysyKäyttäjänIkä() 
@@ -136,6 +252,11 @@ namespace Henkilotietosovellus
             {
                 Console.WriteLine("Anna ikäsi.");
                 syöte = Console.ReadLine() ?? string.Empty;
+
+                if (!int.TryParse(syöte, out ikä) || ikä < 0)
+                {
+                    Console.WriteLine("Virhe: Iän tulee olla positiivinen kokonaisluku.");
+                }
             }
             while (!int.TryParse(syöte, out ikä) || ikä < 0);
 
@@ -189,6 +310,31 @@ namespace Henkilotietosovellus
         private static void Tervehdys(string nimi, int ikä, string sukupuoli) 
         { 
             Console.WriteLine($"Hei {nimi}!. Olet {ikä}-vuotias {sukupuoli}.");
+        }
+
+        private static void TulostaOsoite(string osoite) 
+        {
+            Console.WriteLine($"Osoite: {osoite}");
+        }
+
+        private static void TulostaPostinumero(string postinumero)
+        {
+            Console.WriteLine($"Postinumero: {postinumero}");
+        }
+
+        private static void TulostaPostitoimipaikka(string postitoimipaikka)
+        {
+            Console.WriteLine($"Postitoimipaikka: {postitoimipaikka}");
+        }
+
+        private static void TulostaPuhelinnumero(string puhelinnumero)
+        {
+            Console.WriteLine($"Puhelinnumero: {puhelinnumero}");
+        }
+
+        private static void TulostaSähköposti(string sähköposti)
+        {
+            Console.WriteLine($"Sähköposti: {sähköposti}");
         }
     }
 }
