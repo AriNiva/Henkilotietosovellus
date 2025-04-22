@@ -52,8 +52,6 @@ namespace Henkilotietosovellus
             
             return sukupuoli;
                 
-            
-
             /* ReadLine()?.Trim().ToLower()
                * ReadLine() lukee rivin.
                * ?.Trim() poistaa tyhjät merkit alusta ja lopusta, mutta ei kaadu jos null.
@@ -75,7 +73,7 @@ namespace Henkilotietosovellus
 
                 if (!OnKelvollinenNimi(nimi)) 
                 {
-                    Console.WriteLine("Virhe: Nimi saa sisältää vain kirjaimia ja välilyöntejä");
+                    Console.WriteLine("Virhe: Nimi saa sisältää vain kirjaimia, väliviivoja ja välilyöntejä");
                 }
             }
             while (!OnKelvollinenNimi(nimi));
@@ -85,14 +83,14 @@ namespace Henkilotietosovellus
 
         private static bool OnKelvollinenNimi(string nimi) 
         { 
-            /* Tarkistaa, että nimi ei ole tyhjä ja sisältää vain kirjaimia tai välejä
+            /* Tarkistaa, että nimi ei ole tyhjä ja sisältää vain kirjaimia väliviivoja tai välejä
                Nimi ei voi olla numero tai sekavaa syötettä esim. "!@#"
                char.IsLetter(c) varmistaa, että merkki on kirjain
                c == ' ' sallii välilyönnin (esim. Matti Meikäläinen)
 
             Jos kaikki merkit ovat hyväksyttäviä ja syöte ei ole tyhjä, palautetaan true
             */
-            return !string.IsNullOrWhiteSpace(nimi) && nimi.All(c => char.IsLetter(c) || c == ' ');
+            return !string.IsNullOrWhiteSpace(nimi) && nimi.All(c => char.IsLetter(c) || c == ' ' || c == '-');
 
         }
 
