@@ -127,9 +127,112 @@ namespace Henkilotietosovellus.Tests
 
         [Test]
         public void Main_Kysyy_K‰ytt‰j‰n_S‰hkˆpostin_Uudelleen_Jos_Syˆte_Ei_Kelvollinen_Ja_N‰ytt‰‰_Virheviestin() 
-        { 
-        
+        {
+            SetupUserResponses("Mies", "Ari", "0401234567", "sahkoposti", "ari@posti.fi", "Tie 1", "90630", "Oulu", "40");
+
+            var expectedPrompt = "Virhe: S‰hkˆpostiosoitteen tulee olla muodossa nimi@domain.com";
+
+            var outputLines = RunMainAndGetConsoleOutput();
+
+            var s‰hkˆpostiPromptCount = outputLines.Count(l => l == "Anna s‰hkˆpostiosoitteesi.");
+
+            Assert.That(outputLines[5], Is.EqualTo(expectedPrompt));
+            Assert.That(s‰hkˆpostiPromptCount, Is.EqualTo(2));
         }
+
+        [Test]
+        public void Main_Kysyy_K‰ytt‰j‰n_Osoitteen() 
+        {
+            SetupUserResponses("Mies", "Ari", "0401234567", "ari@posti.fi", "Tie 1", "90630", "Oulu", "40");
+
+            var expectedPrompt = "Anna osoitteesi.";
+
+            var outputLines = RunMainAndGetConsoleOutput();
+
+            Assert.That(outputLines[5], Is.EqualTo(expectedPrompt));
+        }
+
+        [Test]
+        public void Main_Kysyy_K‰ytt‰j‰n_Postinumeron_Syˆte_Kelvollinen() 
+        {
+            SetupUserResponses("Mies", "Ari", "0401234567", "ari@posti.fi", "Tie 1", "90630", "Oulu", "40");
+
+            var expectedPrompt = "Anna postinumerosi.";
+
+            var outputLines = RunMainAndGetConsoleOutput();
+
+            Assert.That(outputLines[6], Is.EqualTo(expectedPrompt));
+        }
+
+        [Test]
+        public void Main_Kysyy_K‰ytt‰j‰n_Postinumeron_Uudelleen_Jos_Syˆte_Ei_Kelvollinen_Ja_N‰ytt‰‰_Virheviestin() 
+        {
+            SetupUserResponses("Mies", "Ari", "0401234567", "ari@posti.fi", "Tie 1", "X", "90630", "Oulu", "40");
+
+            var expectedPrompt = "Virhe: Postinumeron tulee olla 5-numeroinen luku (esim. 00100).";
+
+            var outputLines = RunMainAndGetConsoleOutput();
+
+            var postinumeroPromptCount = outputLines.Count(l => l == "Anna postinumerosi.");
+
+            Assert.That(outputLines[7], Is.EqualTo(expectedPrompt));
+            Assert.That(postinumeroPromptCount, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void Main_Kysyy_K‰ytt‰j‰n_Postitoimipaikan_Syˆte_Kelvollinen() 
+        {
+            SetupUserResponses("Mies", "Ari", "0401234567", "ari@posti.fi", "Tie 1", "90630", "Oulu", "40");
+
+            var expectedPrompt = "Anna postitoimipaikkasi.";
+
+            var outputLines = RunMainAndGetConsoleOutput();
+
+            Assert.That(outputLines[7], Is.EqualTo(expectedPrompt));
+        }
+
+        [Test]
+        public void Main_Kysyy_K‰ytt‰j‰n_Postitoimipaikan_Uudelleen_Jos_Syˆte_Ei_Kelvollinen_Ja_N‰ytt‰‰_Virheviestin() 
+        {
+            SetupUserResponses("Mies", "Ari", "0401234567", "ari@posti.fi", "Tie 1", "90630", "@4a", "Oulu", "40");
+
+            var expectedPrompt = "Virhe: Postitoimipaikan tulee sis‰lt‰‰ vain kirjaimia, v‰lilyˆtej‰ tai v‰liviivoja (esim. Nummi-Pusula).";
+
+            var outputLines = RunMainAndGetConsoleOutput();
+
+            var postitoimipaikkaPromptCount = outputLines.Count(l => l == "Anna postitoimipaikkasi.");
+
+            Assert.That(outputLines[8], Is.EqualTo(expectedPrompt));
+            Assert.That(postitoimipaikkaPromptCount, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void Main_Kysyy_K‰ytt‰j‰n_Ik‰‰_Syˆte_Kelvollinen() 
+        {
+            SetupUserResponses("Mies", "Ari", "0401234567", "ari@posti.fi", "Tie 1", "90630", "Oulu", "40");
+
+            var expectedPrompt = "Anna ik‰si.";
+
+            var outputLines = RunMainAndGetConsoleOutput();
+
+            Assert.That(outputLines[8], Is.EqualTo(expectedPrompt));
+        }
+
+        [Test]
+        public void Main_Kysyy_K‰ytt‰j‰n_Ik‰‰_Uudelleen_Jos_Syˆte_Ei_Kelvollinen_Ja_N‰ytt‰‰_Virheviestin() 
+        {
+            SetupUserResponses("Mies", "Ari", "0401234567", "ari@posti.fi", "Tie 1", "90630", "Oulu", "kahdeksantoista", "40");
+
+            var expectedPrompt = "Virhe: I‰n tulee olla positiivinen kokonaisluku.";
+
+            var outputLines = RunMainAndGetConsoleOutput();
+
+            var ik‰PromptCount = outputLines.Count(l => l == "Anna ik‰si.");
+
+            Assert.That(outputLines[9], Is.EqualTo(expectedPrompt));
+            Assert.That(ik‰PromptCount, Is.EqualTo(2));
+        }
+
 
         private string[] RunMainAndGetConsoleOutput() 
         {
