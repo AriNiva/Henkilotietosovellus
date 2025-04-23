@@ -3,6 +3,7 @@ using System.Text;
 
 namespace Henkilotietosovellus.Tests
 {
+    [TestFixture]
     public class ProgramTests
     {
         StringBuilder _ConsoleOutput;
@@ -233,6 +234,59 @@ namespace Henkilotietosovellus.Tests
             Assert.That(ikäPromptCount, Is.EqualTo(2));
         }
 
+        [Test]
+        public void Kysymys_Tulostaa_MitäJäbäDuunaa_Jos_Sukupuoli_On_Mies() 
+        {
+            SetupUserResponses("Mies", "Ari", "0401234567", "ari@posti.fi", "Tie 1", "90630", "Oulu", "40");
+
+            var expectedPrompt = "Mitä jäbä duunaa?";
+
+            var outputLines = RunMainAndGetConsoleOutput();
+
+            Assert.That(outputLines[17], Is.EqualTo(expectedPrompt));
+        }
+
+        [Test]
+        public void Kysymys_Tulostaa_MitäMimmiDuunaa_Jos_Sukupuoli_On_Nainen()
+        {
+            SetupUserResponses("Nainen", "Ari", "0401234567", "ari@posti.fi", "Tie 1", "90630", "Oulu", "40");
+
+            var expectedPrompt = "Mitä mimmi duunaa?";
+
+            var outputLines = RunMainAndGetConsoleOutput();
+
+            Assert.That(outputLines[17], Is.EqualTo(expectedPrompt));
+        }
+
+        [Test]
+        public void Main_KaikkiKelvollisetSyötteet_TulostusOikein()
+        {
+            // Syötetään vain kelvolliset arvot
+            SetupUserResponses("Nainen", "Anna Virtanen", "0501234567", "anna@example.com", "Katu 5", "00100", "Helsinki", "30");
+
+            var outputLines = RunMainAndGetConsoleOutput();
+
+            // Tarkistetaan että ei tule yhtään virheilmoitusta
+            Assert.That(outputLines.Any(l => l.StartsWith("Virhe")), Is.False);
+
+            // Tarkistetaan että kaikki tulostukset ovat mukana
+            Assert.Multiple(() =>
+            {
+                Assert.That(outputLines, Does.Contain("Henkilötietosovellus, versio 1.0."));
+                Assert.That(outputLines, Does.Contain("Kerro sukupuolesi. (Mies/Nainen)."));
+                Assert.That(outputLines, Does.Contain("Anna nimesi."));
+                Assert.That(outputLines, Does.Contain("Anna puhelinnumerosi."));
+                Assert.That(outputLines, Does.Contain("Anna sähköpostiosoitteesi."));
+                Assert.That(outputLines, Does.Contain("Anna osoitteesi."));
+                Assert.That(outputLines, Does.Contain("Anna postinumerosi."));
+                Assert.That(outputLines, Does.Contain("Anna postitoimipaikkasi."));
+                Assert.That(outputLines, Does.Contain("Anna ikäsi."));
+                Assert.That(outputLines, Does.Contain("Hei Anna Virtanen!. Olet 30-vuotias Nainen."));
+                Assert.That(outputLines, Does.Contain("Olet täysi-ikäinen"));
+                Assert.That(outputLines, Does.Contain("Yhteystiedot ovat..."));
+                Assert.That(outputLines, Does.Contain("Mitä mimmi duunaa?"));
+            });
+        }
 
         private string[] RunMainAndGetConsoleOutput() 
         {
@@ -247,6 +301,134 @@ namespace Henkilotietosovellus.Tests
                 _ConsoleInput.InSequence(sequence).Setup(x => x.ReadLine()).Returns(response);
             return sequence;
             
+        }
+    }
+
+    [TestFixture]
+    public class IkaLuokitusTests 
+    {
+        StringBuilder _ConsoleOutput;
+        Mock<TextReader> _ConsoleInput;
+
+        [SetUp]
+        public void Setup()
+        {
+            _ConsoleOutput = new StringBuilder();
+            var consoleOutputWriter = new StringWriter(_ConsoleOutput);
+            _ConsoleInput = new Mock<TextReader>();
+            Console.SetOut(consoleOutputWriter);
+            Console.SetIn(_ConsoleInput.Object);
+        }
+
+        [Test]
+        public void MuodostaIkäLuokitus_Tulostaa_OletVauva_Jos_Ikä_Alle_1()
+        {
+            SetupUserResponses("Mies", "Ari", "0401234567", "ari@posti.fi", "Tie 1", "90630", "Oulu", "0");
+
+            var expectedPrompt = "Olet vauva";
+
+            var outputLines = RunMainAndGetConsoleOutput();
+
+            Assert.That(outputLines[10], Is.EqualTo(expectedPrompt));
+        }
+
+        [Test]
+        public void MuodostaIkäLuokitus_Tulostaa_OletAlleKouluikäinen_Jos_Ikä_On_1()
+        {
+            SetupUserResponses("Mies", "Ari", "0401234567", "ari@posti.fi", "Tie 1", "90630", "Oulu", "1");
+
+            var expectedPrompt = "Olet alle kouluikäinen";
+
+            var outputLines = RunMainAndGetConsoleOutput();
+
+            Assert.That(outputLines[10], Is.EqualTo(expectedPrompt));
+        }
+
+        [Test]
+        public void MuodostaIkäLuokitus_Tulostaa_OletAlleKouluikäinen_Jos_Ikä_Alle_7() 
+        {
+            SetupUserResponses("Mies", "Ari", "0401234567", "ari@posti.fi", "Tie 1", "90630", "Oulu", "6");
+
+            var expectedPrompt = "Olet alle kouluikäinen";
+
+            var outputLines = RunMainAndGetConsoleOutput();
+
+            Assert.That(outputLines[10], Is.EqualTo(expectedPrompt));
+        }
+
+        [Test]
+        public void MuodostaIkäLuokitus_Tulostaa_OletAlaikäinen_Jos_Ikä_On_7()
+        {
+            SetupUserResponses("Mies", "Ari", "0401234567", "ari@posti.fi", "Tie 1", "90630", "Oulu", "7");
+
+            var expectedPrompt = "Olet alaikäinen";
+
+            var outputLines = RunMainAndGetConsoleOutput();
+
+            Assert.That(outputLines[10], Is.EqualTo(expectedPrompt));
+        }
+
+        [Test]
+        public void MuodostaIkäLuokitus_Tulostaa_OletAlaikäinen_Jos_Ikä_Alle_18() 
+        {
+            SetupUserResponses("Mies", "Ari", "0401234567", "ari@posti.fi", "Tie 1", "90630", "Oulu", "17");
+
+            var expectedPrompt = "Olet alaikäinen";
+
+            var outputLines = RunMainAndGetConsoleOutput();
+
+            Assert.That(outputLines[10], Is.EqualTo(expectedPrompt));
+        }
+
+        [Test]
+        public void MuodostaIkäLuokitus_Tulostaa_OletTäysiIkäinen_Jos_Ikä_On_18()
+        {
+            SetupUserResponses("Mies", "Ari", "0401234567", "ari@posti.fi", "Tie 1", "90630", "Oulu", "18");
+
+            var expectedPrompt = "Olet täysi-ikäinen";
+
+            var outputLines = RunMainAndGetConsoleOutput();
+
+            Assert.That(outputLines[10], Is.EqualTo(expectedPrompt));
+        }
+
+        [Test]
+        public void MuodostaIkäLuokitus_Tulostaa_OletTäysiIkäinen_Jos_Ikä_Alle_66() 
+        {
+            SetupUserResponses("Mies", "Ari", "0401234567", "ari@posti.fi", "Tie 1", "90630", "Oulu", "65");
+
+            var expectedPrompt = "Olet täysi-ikäinen";
+
+            var outputLines = RunMainAndGetConsoleOutput();
+
+            Assert.That(outputLines[10], Is.EqualTo(expectedPrompt));
+        }
+
+        [Test]
+        public void MuodostaIkäLuokitus_Tulostaa_OletSeniori_Jos_Ikä_Yli_65() 
+        {
+            SetupUserResponses("Mies", "Ari", "0401234567", "ari@posti.fi", "Tie 1", "90630", "Oulu", "66");
+
+            var expectedPrompt = "Olet seniori ja ehkä eläkkeellä";
+
+            var outputLines = RunMainAndGetConsoleOutput();
+
+            Assert.That(outputLines[10], Is.EqualTo(expectedPrompt));
+        }
+
+        private string[] RunMainAndGetConsoleOutput()
+        {
+            Program.Main(default);
+            return _ConsoleOutput.ToString().Split("\r\n");
+        }
+
+        private MockSequence SetupUserResponses(params string[] userResponses)
+        {
+            var sequence = new MockSequence();
+            foreach (var response in userResponses)
+                _ConsoleInput.InSequence(sequence).Setup(x => x.ReadLine()).Returns(response);
+            return sequence;
+
         }
     }
 }
