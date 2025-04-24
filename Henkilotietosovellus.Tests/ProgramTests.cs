@@ -6,16 +6,33 @@ namespace Henkilotietosovellus.Tests
     [TestFixture]
     public class ProgramTests
     {
-        StringBuilder _ConsoleOutput;
-        Mock<TextReader> _ConsoleInput;
+        // Kenttien määrittely
+
+        StringBuilder _ConsoleOutput; // Tallentaa kaiken tekstin, jonka ohjelma kirjoittaa Console.WriteLine-kutsuilla.
+
+        Mock<TextReader> _ConsoleInput; // Simuloidaan Console.ReadLine()-syötettä. Tämä on ns. mock-input.
 
         [SetUp]
         public void Setup()
         {
+            // Luodaan StringBuilder-olio tallentamaan konsoliin kirjoitettavat tekstit. 
+            // Tämä toimii ohjelman "virtuaalisena konsolipuskurina" johon Console.WriteLine-tulostus menee.
             _ConsoleOutput = new StringBuilder();
+
+            // Luodaan StringWriter, joka kirjoittaa tekstin suoraan _ConsoleOutput-merkkijonopuskuriin.
+            // Tämä mahdollistaa Console.WriteLine-kutsujen tallentamisen StringBuilderiin.
             var consoleOutputWriter = new StringWriter(_ConsoleOutput);
+
+            // Luodaan mock-objekti TextReader-luokasta, (joka on Console.In:n tyyppi) joka simuloi käyttäjän syötettä Console.ReadLine()-kutsuille.
+            // Mocking mahdollistaa testauksen ilman, että käyttäjä oikeasti antaa syötettä.
             _ConsoleInput = new Mock<TextReader>();
+
+            // Asetetaan ohjelman oletusulostulovirta Console.WriteLine-kutsuille niin, että ne kirjoitetaan _ConsoleOutput-muuttujaan
+            // eikä suoraan konsoliin. Tämä mahdollistaa tulosteen tarkistamisen testissä.
             Console.SetOut(consoleOutputWriter);
+
+            // Asetetaan ohjelman oletussyötevirta niin, että Console.ReadLine() lukee _ConsoleInput-mock-oliosta
+            // eikä suoraan käyttäjän kirjoittamasta syötteestä. Tämä auttaa testien suorittamisessa ilman manuaalista syötettä.
             Console.SetIn(_ConsoleInput.Object);
         }
 
@@ -288,17 +305,19 @@ namespace Henkilotietosovellus.Tests
             });
         }
 
+        // Ajaa pääohjelman, ja palauttaa sen tulosteen riveittäin.
         private string[] RunMainAndGetConsoleOutput() 
         {
             Program.Main(default);
             return _ConsoleOutput.ToString().Split("\r\n");
         }
 
-        private MockSequence SetupUserResponses(params string[] userResponses) 
+        // Metodi asettaa simuloidut vastaukset käyttäjältä
+         private MockSequence SetupUserResponses(params string[] userResponses) 
         { 
             var sequence = new MockSequence();
             foreach (var response in userResponses) 
-                _ConsoleInput.InSequence(sequence).Setup(x => x.ReadLine()).Returns(response);
+                _ConsoleInput.InSequence(sequence).Setup(mockConsoleReader => mockConsoleReader.ReadLine()).Returns(response);
             return sequence;
             
         }
