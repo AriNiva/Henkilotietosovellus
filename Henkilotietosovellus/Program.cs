@@ -51,15 +51,6 @@ namespace Henkilotietosovellus
             while (sukupuoli != "Mies" && sukupuoli != "Nainen");
             
             return sukupuoli;
-                
-            /* ReadLine()?.Trim().ToLower()
-               * ReadLine() lukee rivin.
-               * ?.Trim() poistaa tyhjät merkit alusta ja lopusta, mutta ei kaadu jos null.
-               * ToLower() muuntaa kaiken pieniksi kirjaimiksi. */
-
-            /* return char.ToUpper(sukupuoli[0]) + sukupuoli.Substring(1);
-               *palauttaa muotoillun version: "mies" -> "Mies" ja "nainen" -> "Nainen" */
-
         }
 
         private static string KysyKäyttäjänNimi()
@@ -239,7 +230,7 @@ namespace Henkilotietosovellus
             /* do/while loop is a variant of the while loop. This loop will execute the code block once, before checking if the condition is true,
                then it will repeat the loop as long as the condition is true.*/
 
-            /* Silmikka jatkuu niin kauan kuin:
+            /* Silmukka jatkuu niin kauan kuin:
                * (!int.TryParse(syöte, out ikä) epäonnistuu (eli käyttäjä kirjoitti esim.kirjaimia)
                * tai iän arvo on alle 0 (esim -5)
              
